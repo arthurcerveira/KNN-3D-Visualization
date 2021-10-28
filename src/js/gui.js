@@ -8,69 +8,27 @@ const cameras = {
     rotate_y: 0, 
     rotate_z: 0, 
     translate_x: 110,
-    translate_y: 120,
+    translate_y: 125,
     translate_z: 0,
-    zoom: 60,
-    P1_x: 0,
-    P1_y: 0,
-    P1_z: 0,
-    P2_x: 0,
-    P2_y: 0,
-    P2_z: 0,
-    P3_x: 0,
-    P3_y: 0,
-    P3_z: 0,
-    P4_x: 0,
-    P4_y: 0,
-    P4_z: 0,
-    t: 0,
-    activate: false
+    zoom: 40,
   },
   camera_2: {
-    rotate_x: 0.3,  
-    rotate_y: 0, 
+    rotate_x: 0,  
+    rotate_y: 4.8, 
     rotate_z: 0, 
-    translate_x: -20,
-    translate_y: 0,
-    translate_z: 0,
-    zoom: 60,
-    P1_x: 0,
-    P1_y: 0,
-    P1_z: 0,
-    P2_x: 0,
-    P2_y: 0,
-    P2_z: 0,
-    P3_x: 0,
-    P3_y: 0,
-    P3_z: 0,
-    P4_x: 0,
-    P4_y: 0,
-    P4_z: 0,
-    t: 0,
-    activate: false
+    translate_x: 22,
+    translate_y: 125,
+    translate_z: -77,
+    zoom: 40,
   },
   camera_3: {
-    rotate_x: 5.9,  
-    rotate_y: 0, 
+    rotate_x: 0,  
+    rotate_y: 0.95, 
     rotate_z: 0, 
-    translate_x: 20,
-    translate_y: 0,
-    translate_z: 0,
-    zoom: 60,
-    P1_x: 0,
-    P1_y: 0,
-    P1_z: 0,
-    P2_x: 0,
-    P2_y: 0,
-    P2_z: 0,
-    P3_x: 0,
-    P3_y: 0,
-    P3_z: 0,
-    P4_x: 0,
-    P4_y: 0,
-    P4_z: 0,
-    t: 0,
-    activate: false
+    translate_x: 243,
+    translate_y: 122,
+    translate_z: -5,
+    zoom: 15,
   }
 }
 
@@ -95,20 +53,6 @@ var defaultConfig = {
   remove_object: function() {
     this.remove = true;
   },
-  P1_x: 0,
-  P1_y: 0,
-  P1_z: 0,
-  P2_x: 0,
-  P2_y: 0,
-  P2_z: 0,
-  P3_x: 0,
-  P3_y: 0,
-  P3_z: 0,
-  P4_x: 0,
-  P4_y: 0,
-  P4_z: 0,
-  t: 0,
-  activate: false
 };
 
 var animationConfig = {
@@ -150,7 +94,7 @@ var cameraAnimationConfig = {
 // Define gui outside of loadGUI function
 const gui = new dat.GUI({name: 'Menu',
                          closeOnTop: true});
-gui.add(addObjConfig, "add_object");
+// gui.add(addObjConfig, "add_object");
 
 const loadGUI = () => {
   try {
@@ -173,22 +117,6 @@ const loadGUI = () => {
   cameraMenu.add(cameras[cameraOption], "rotate_y", 0, 6, 0.01);
   cameraMenu.add(cameras[cameraOption], "rotate_z", 0, 6, 0.01);
   cameraMenu.add(cameras[cameraOption], "zoom", 15, 179, 0.1);
-
-  const bezierCamera = cameraMenu.addFolder("Bezier");
-  bezierCamera.add(cameras[cameraOption], "P1_x", -100, 100, 1);
-  bezierCamera.add(cameras[cameraOption], "P1_y", -100, 100, 1);
-  bezierCamera.add(cameras[cameraOption], "P1_z", -100, 100, 1);
-  bezierCamera.add(cameras[cameraOption], "P2_x", -100, 100, 1);
-  bezierCamera.add(cameras[cameraOption], "P2_y", -100, 100, 1);
-  bezierCamera.add(cameras[cameraOption], "P2_z", -100, 100, 1);
-  bezierCamera.add(cameras[cameraOption], "P3_x", -100, 100, 1);
-  bezierCamera.add(cameras[cameraOption], "P3_y", -100, 100, 1);
-  bezierCamera.add(cameras[cameraOption], "P3_z", -100, 100, 1);
-  bezierCamera.add(cameras[cameraOption], "P4_x", -100, 100, 1);
-  bezierCamera.add(cameras[cameraOption], "P4_y", -100, 100, 1);
-  bezierCamera.add(cameras[cameraOption], "P4_z", -100, 100, 1);
-  bezierCamera.add(cameras[cameraOption], "t", 0, 1, 0.005);
-  bezierCamera.add(cameras[cameraOption], "activate");
 
   try {
     cameraMenu.removeFolder(cameraMenu.__folders.Animation);
@@ -223,52 +151,35 @@ const loadGUI = () => {
   animation.add(animationConfig, "add");
   animation.add(animationConfig, "start");
 
-  objectsArray.forEach((obj, index) => {
-    try {
-      gui.removeFolder(gui.__folders["Object " + index]);
-    } catch (err) {
-      console.log(err.message);
-    }
+  // objectsArray.forEach((obj, index) => {
+  //   try {
+  //     gui.removeFolder(gui.__folders["Object " + index]);
+  //   } catch (err) {
+  //     console.log(err.message);
+  //   }
 
-    const object = gui.addFolder("Object " + index);
+  //   const object = gui.addFolder("Object " + index);
 
-    object.add(obj.config, "rotate_x", 0, 20, 0.5);
-    object.add(obj.config, "rotate_y", 0, 20, 0.5);
-    object.add(obj.config, "rotate_z", 0, 20, 0.5);
-    object.add(obj.config, "translate_x", -100, 100, 1);
-    object.add(obj.config, "translate_y", -100, 100, 1);
-    object.add(obj.config, "translate_z", -100, 100, 1);
-    object.add(obj.config, "scale_x", 0.1, 5, 0.1);
-    object.add(obj.config, "scale_y", 0.1, 5, 0.1);
-    object.add(obj.config, "scale_z", 0.1, 5, 0.1);
-    object.add(obj.config, "remove_object");
-    
-    const bezier = object.addFolder("Bezier");
-    bezier.add(obj.config, "P1_x", -100, 100, 1);
-    bezier.add(obj.config, "P1_y", -100, 100, 1);
-    bezier.add(obj.config, "P1_z", -100, 100, 1);
-    bezier.add(obj.config, "P2_x", -100, 100, 1);
-    bezier.add(obj.config, "P2_y", -100, 100, 1);
-    bezier.add(obj.config, "P2_z", -100, 100, 1);
-    bezier.add(obj.config, "P3_x", -100, 100, 1);
-    bezier.add(obj.config, "P3_y", -100, 100, 1);
-    bezier.add(obj.config, "P3_z", -100, 100, 1);
-    bezier.add(obj.config, "P4_x", -100, 100, 1);
-    bezier.add(obj.config, "P4_y", -100, 100, 1);
-    bezier.add(obj.config, "P4_z", -100, 100, 1);
-    bezier.add(obj.config, "t", 0, 1, 0.05);
-    bezier.add(obj.config, "activate");
-  })
+  //   object.add(obj.config, "rotate_x", 0, 20, 0.5);
+  //   object.add(obj.config, "rotate_y", 0, 20, 0.5);
+  //   object.add(obj.config, "rotate_z", 0, 20, 0.5);
+  //   object.add(obj.config, "translate_x", -100, 100, 1);
+  //   object.add(obj.config, "translate_y", -100, 100, 1);
+  //   object.add(obj.config, "translate_z", -100, 100, 1);
+  //   object.add(obj.config, "scale_x", 0.1, 5, 0.1);
+  //   object.add(obj.config, "scale_y", 0.1, 5, 0.1);
+  //   object.add(obj.config, "scale_z", 0.1, 5, 0.1);
+  //   object.add(obj.config, "remove_object");
 
-  // Remove the remaining objects from the menu
-  var folders = Object.keys(gui.__folders).length;
-  var expectedFolders = objectsArray.length + 1;
-  if (folders > expectedFolders) {
-    for (var index=expectedFolders; index <= folders; index ++)
-      try {
-        gui.removeFolder(gui.__folders["Object " + (index - 1)]);
-      } catch (err) {
-        console.log(err.message)
-      }
-  }
+  // // Remove the remaining objects from the menu
+  // var folders = Object.keys(gui.__folders).length;
+  // var expectedFolders = objectsArray.length + 1;
+  // if (folders > expectedFolders) {
+  //   for (var index=expectedFolders; index <= folders; index ++)
+  //     try {
+  //       gui.removeFolder(gui.__folders["Object " + (index - 1)]);
+  //     } catch (err) {
+  //       console.log(err.message)
+  //     }
+  // }
 };

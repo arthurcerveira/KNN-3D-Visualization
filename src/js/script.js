@@ -1,4 +1,4 @@
-const offset = 2;
+const fieldnames = ["age", "year_operation", "nodes"]
 
 function createObject(point, bufferInfo, VAO) {
   let pointClass = point.status;
@@ -12,9 +12,9 @@ function createObject(point, bufferInfo, VAO) {
   };
 
   let pointConfig = {...defaultConfig};
-  pointConfig.translate_x = point.age * offset;
-  pointConfig.translate_y = point.year_operation * offset;
-  pointConfig.translate_z = point.nodes * offset;
+  pointConfig.translate_x = point.age * 2;
+  pointConfig.translate_y = point.year_operation * 2;
+  pointConfig.translate_z = point.nodes * 2;
 
   pointConfig.scale_x = 0.05;
   pointConfig.scale_y = 0.05;
@@ -26,6 +26,48 @@ function createObject(point, bufferInfo, VAO) {
     config: {...pointConfig},
     uniforms: {...cubeUniforms}
   })
+}
+
+function KNN(point, K) {
+  let neighbors = [];
+
+  data.forEach((neighbor, index) => {
+    let distance = 0;
+
+    fieldnames.forEach((feature) => {
+      // Euclidean distance
+      distance += (point[feature] - neighbor[feature]) ** 2
+    });
+
+    let distance_sqrt = Math.sqrt(distance);
+
+    neighbors.push({
+      index: index,
+      distance: distance_sqrt,
+      status: neighbor.status
+    });
+  })
+
+  // Sort array by distance
+  neighbors.sort((a, b) => a.distance - b.distance);
+
+  // console.log(neighbors)
+
+  nearest_neighbors = {
+    "1": 0,
+    "2": 0
+  };
+
+  for (let index = 0; index < K; index++) {
+    let pointClass = neighbors[index].status;
+
+    nearest_neighbors[pointClass] += 1;
+  }
+
+  // Return class with highest lenght
+  if (nearest_neighbors["1"] >= nearest_neighbors["2"])
+    return 1
+  else return 2
 }
 
 function main() {
@@ -75,6 +117,7 @@ function main() {
   loadGUI();
 
   // [Arthur] Create objects based on available data
+  objectsArray = [];
   data.forEach(
     point => createObject(point, bufferInfo, VAO)
   )
@@ -289,5 +332,4 @@ function main() {
   requestAnimationFrame(render);
 }
 
-console.log(data)
 main();
