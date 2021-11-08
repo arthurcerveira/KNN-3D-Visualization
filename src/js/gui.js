@@ -1,41 +1,55 @@
 var objectsArray = [];
-var animationArray = [];
+
+var addedData = [];
+var addedObjects = [];
+
 var animationCameraArray = [];
+
+var KNNConfig = {
+  K: 3,
+  Offset: 25
+}
+
+var addPointConfig = {
+  age: 30, 
+  year_operation: 60, 
+  nodes: 0,
+  add: function() {
+    addedData.push({
+      age: this.age,
+      year_operation: this.year_operation,
+      nodes: this.nodes
+    })
+  }
+}
 
 const cameras = {
   camera_1: {
     rotate_x: 0,  
     rotate_y: 0, 
     rotate_z: 0, 
-    translate_x: 110,
-    translate_y: 125,
-    translate_z: 0,
+    translate_x: 1350,
+    translate_y: 1550,
+    translate_z: 1800,
     zoom: 40,
   },
   camera_2: {
     rotate_x: 0,  
-    rotate_y: 4.8, 
+    rotate_y: 3.8, 
     rotate_z: 0, 
-    translate_x: 22,
-    translate_y: 125,
-    translate_z: -77,
+    translate_x: 584,
+    translate_y: 1510,
+    translate_z: -300,
     zoom: 40,
   },
   camera_3: {
     rotate_x: 0,  
-    rotate_y: 0.95, 
+    rotate_y: 1.68, 
     rotate_z: 0, 
-    translate_x: 243,
-    translate_y: 122,
-    translate_z: -5,
-    zoom: 15,
-  }
-}
-
-var addObjConfig = {
-  execute: false,
-  add_object: function() {
-    this.execute = true;
+    translate_x: 2205,
+    translate_y: 1568,
+    translate_z: 227,
+    zoom: 50,
   }
 }
 
@@ -48,28 +62,7 @@ var defaultConfig = {
   translate_z: 0,
   scale_x: 1,
   scale_y: 1,
-  scale_z: 1,
-  remove: false,
-  remove_object: function() {
-    this.remove = true;
-  },
-};
-
-var animationConfig = {
-  object: 0,
-  type: "rotate_x",
-  time: 0,
-  add: function() {
-    animationArray.push({
-      object: this.object,
-      type: this.type,
-      time: this.time
-    })
-  },
-  execute: false,
-  start: function() {
-    this.execute = true;
-  }
+  scale_z: 1
 };
 
 var cameraConfig = {
@@ -91,17 +84,48 @@ var cameraAnimationConfig = {
   }
 };
 
+var removeObjConfig = {
+  objectIndex: 0,
+  remove: false,
+  removeObject: function() {
+    this.remove = true;
+  },
+}
+
 // Define gui outside of loadGUI function
 const gui = new dat.GUI({name: 'Menu',
                          closeOnTop: true});
-// gui.add(addObjConfig, "add_object");
 
 const loadGUI = () => {
   try {
     // Remove folder before creating new ones
-    gui.removeFolder(gui.__folders.Camera);
+    gui.removeFolder(gui.__folders.KNN);
   } catch (err) {
     console.log(err.message)
+  }
+  
+  const KNNMenu = gui.addFolder("KNN");
+  KNNMenu.add(KNNConfig, "K", 0, data.length, 1);
+  KNNMenu.add(KNNConfig, "Offset", 0, 50, 0.1);
+
+  try {
+    // Remove folder before creating new ones
+    gui.removeFolder(gui.__folders.Point);
+  } catch (err) {
+    console.log(err.message);
+  }
+
+  const pointMenu = gui.addFolder("Point");
+  pointMenu.add(addPointConfig, "age", 20, 90, 1);
+  pointMenu.add(addPointConfig, "year_operation", 50, 70, 1);
+  pointMenu.add(addPointConfig, "nodes", 0, 50, 1);
+  pointMenu.add(addPointConfig, "add");
+
+  try {
+    // Remove folder before creating new ones
+    gui.removeFolder(gui.__folders.Camera);
+  } catch (err) {
+    console.log(err.message);
   }
 
   const cameraMenu = gui.addFolder("Camera");
@@ -110,9 +134,9 @@ const loadGUI = () => {
 
   cameraMenu.add(cameraConfig, "camera", Object.keys(cameras));
 
-  cameraMenu.add(cameras[cameraOption], "translate_x", -250, 250, 1);
-  cameraMenu.add(cameras[cameraOption], "translate_y", -250, 250, 1);
-  cameraMenu.add(cameras[cameraOption], "translate_z", -250, 250, 1);
+  cameraMenu.add(cameras[cameraOption], "translate_x", -250, 5000, 1);
+  cameraMenu.add(cameras[cameraOption], "translate_y", -250, 5000, 1);
+  cameraMenu.add(cameras[cameraOption], "translate_z", -5000, 5000, 1);
   cameraMenu.add(cameras[cameraOption], "rotate_x", 0, 6, 0.01);
   cameraMenu.add(cameras[cameraOption], "rotate_y", 0, 6, 0.01);
   cameraMenu.add(cameras[cameraOption], "rotate_z", 0, 6, 0.01);
@@ -121,7 +145,7 @@ const loadGUI = () => {
   try {
     cameraMenu.removeFolder(cameraMenu.__folders.Animation);
   } catch (err) {
-    console.log(err.message)
+    console.log(err.message);
   }
 
   const cameraAnimation = cameraMenu.addFolder("Animation");
@@ -134,22 +158,18 @@ const loadGUI = () => {
   cameraAnimation.add(cameraAnimationConfig, "start");
 
   try {
-    gui.removeFolder(gui.__folders.Animation);
+    gui.removeFolder(gui.__folders.Objects);
   } catch (err) {
-    console.log(err.message)
+    console.log(err.message);
   }
 
-  const animation = gui.addFolder("Animation");
+  const objects = gui.addFolder("Objects");
 
-  var options = Object.keys(defaultConfig).splice(0, 9);;
-  
+  var objectsIndex = [...Array(data.length).keys()];
+
   // Get list of index from array objects
-  var objects = [...Array(objectsArray.length).keys()];
-  animation.add(animationConfig, "object", objects);
-  animation.add(animationConfig, "type", options);
-  animation.add(animationConfig, "time", 0, 20 , 1);
-  animation.add(animationConfig, "add");
-  animation.add(animationConfig, "start");
+  objects.add(removeObjConfig, "objectIndex", objectsIndex);
+  objects.add(removeObjConfig, "removeObject");
 
   // objectsArray.forEach((obj, index) => {
   //   try {
