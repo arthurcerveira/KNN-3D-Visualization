@@ -7,7 +7,8 @@ var animationCameraArray = [];
 
 var KNNConfig = {
   K: 3,
-  Offset: 25
+  Offset: 25,
+  drawLines: false
 }
 
 var addPointConfig = {
@@ -90,6 +91,7 @@ var removeObjConfig = {
   removeObject: function() {
     this.remove = true;
   },
+  select: false,
 }
 
 // Define gui outside of loadGUI function
@@ -107,6 +109,7 @@ const loadGUI = () => {
   const KNNMenu = gui.addFolder("KNN");
   KNNMenu.add(KNNConfig, "K", 0, data.length, 1);
   KNNMenu.add(KNNConfig, "Offset", 0, 50, 0.1);
+  KNNMenu.add(KNNConfig, "drawLines");
 
   try {
     // Remove folder before creating new ones
@@ -170,6 +173,7 @@ const loadGUI = () => {
   // Get list of index from array objects
   objects.add(removeObjConfig, "objectIndex", objectsIndex);
   objects.add(removeObjConfig, "removeObject");
+  objects.add(removeObjConfig, "select");
 
   // objectsArray.forEach((obj, index) => {
   //   try {

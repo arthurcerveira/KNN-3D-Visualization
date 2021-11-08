@@ -219,72 +219,73 @@ function main() {
       let pointObj = createObject(point, bufferInfo, VAO, addedObjects, 1);
 
       // [Arthur] Get object position
-      let startPosition = [pointObj.config.translate_x / 50,
-                           pointObj.config.translate_y / 50,
-                           pointObj.config.translate_z / 50];
+      let startPosition = [pointObj.config.translate_x / 80,
+                           pointObj.config.translate_y / 80,
+                           pointObj.config.translate_z / 80];
 
       // [Arthur] Draw lines to neighbors
-      prediction.neighbors.forEach(index => {
-        curva = [];
-        cor = [];
+      if (KNNConfig.drawLines){
+        prediction.neighbors.forEach(index => {
+          curva = [];
+          cor = [];
 
-        curva.push(startPosition[0]);
-        curva.push(startPosition[1]);
-        curva.push(startPosition[2]);
+          curva.push(startPosition[0]);
+          curva.push(startPosition[1]);
+          curva.push(startPosition[2]);
 
-        cor.push(1);
-        cor.push(0);
-        cor.push(0);
-        cor.push(1);
+          cor.push(1);
+          cor.push(0);
+          cor.push(0);
+          cor.push(1);
 
-        let neighbor = objectsArray[index];
+          let neighbor = objectsArray[index];
 
-        let endPosition = [neighbor.config.translate_x / 50,
-                           neighbor.config.translate_y / 50,
-                           neighbor.config.translate_z / 50];
+          let endPosition = [neighbor.config.translate_x / 80,
+                            neighbor.config.translate_y / 80,
+                            neighbor.config.translate_z / 80];
 
-        curva.push(endPosition[0]);
-        curva.push(endPosition[1]);
-        curva.push(endPosition[2]);
+          curva.push(endPosition[0]);
+          curva.push(endPosition[1]);
+          curva.push(endPosition[2]);
 
-        cor.push(1);
-        cor.push(0);
-        cor.push(0);
-        cor.push(1);
+          cor.push(1);
+          cor.push(0);
+          cor.push(0);
+          cor.push(1);
 
-        let arrays = {
-          position: curva,
-          color: cor
-        };
+          let arrays = {
+            position: curva,
+            color: cor
+          };
 
-        // [Arthur] Draw line from startPosition to endPosition
-        var objBufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
+          // [Arthur] Draw line from startPosition to endPosition
+          var objBufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
-        // Draw
-        var objVAO = twgl.createVAOFromBufferInfo(
-          gl,
-          meshProgramInfo,
-          objBufferInfo,
-        );
+          var objVAO = twgl.createVAOFromBufferInfo(
+            gl,
+            meshProgramInfo,
+            objBufferInfo,
+          );
 
-        gl.bindVertexArray(objVAO);
+          gl.bindVertexArray(objVAO);
 
-        var line = {
-          u_colorMult: [1, 0, 0, 1],
-          u_matrix: m4.identity(),
-        }
+          var line = {
+            u_colorMult: [1, 0, 0, 1],
+            u_matrix: m4.identity(),
+          }
 
-        line.u_matrix = computeMatrix(
-          viewProjectionMatrix,
-          [startPosition[0], startPosition[1], startPosition[2]],
-          [0, 0, 0],
-          [49, 49, 49]
-        );
+          line.u_matrix = computeMatrix(
+            viewProjectionMatrix,
+            [startPosition[0], startPosition[1], startPosition[2]],
+            [0, 0, 0],
+            [79, 79, 79]
+          );
 
-        twgl.setUniforms(meshProgramInfo, line);
+          twgl.setUniforms(meshProgramInfo, line);
 
-        twgl.drawBufferInfo(gl, objBufferInfo, gl.LINES);
-      })
+          twgl.drawBufferInfo(gl, objBufferInfo, gl.LINES);
+        })
+      }
     })
 
     // [Arthur] Remove objects from array if necessary
@@ -297,6 +298,12 @@ function main() {
       loadGUI();
 
       removeObjConfig.remove = false;
+    }
+
+    // Change color of selected object
+    if (removeObjConfig.select) {
+      var index = removeObjConfig.objectIndex;
+      objectsArray[index].uniforms.u_colorMult = [1, 0, 0, 1];
     }
 
     //  [Arthur] Iterate the array and draw the objects
