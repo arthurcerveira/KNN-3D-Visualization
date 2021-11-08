@@ -233,7 +233,7 @@ function main() {
           curva.push(startPosition[1]);
           curva.push(startPosition[2]);
 
-          cor.push(1);
+          cor.push(0);
           cor.push(0);
           cor.push(0);
           cor.push(1);
@@ -248,7 +248,7 @@ function main() {
           curva.push(endPosition[1]);
           curva.push(endPosition[2]);
 
-          cor.push(1);
+          cor.push(0);
           cor.push(0);
           cor.push(0);
           cor.push(1);
@@ -270,7 +270,7 @@ function main() {
           gl.bindVertexArray(objVAO);
 
           var line = {
-            u_colorMult: [1, 0, 0, 1],
+            u_colorMult: [0, 0, 0, 1],
             u_matrix: m4.identity(),
           }
 
